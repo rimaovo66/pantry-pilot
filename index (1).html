@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pantry Pilot: buy at the right time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBFCF8; --surface:#EEF2EA; --ink:#17251E; --muted:#56655C;
+  --green:#1F5A3F; --green-soft:#D5E6DA; --ticket:#F2C230; --ticket-ink:#3A2C00;
+  --tomato:#C8442A; --line:#CBD6CC; --card:#FFFFFF;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101813; --surface:#18241D; --ink:#E8EFE9; --muted:#9FB2A6;
+    --green:#7CC69C; --green-soft:#21382B; --ticket:#F2C230; --ticket-ink:#2A2000;
+    --tomato:#F0866E; --line:#2C3D33; --card:#16211A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101813; --surface:#18241D; --ink:#E8EFE9; --muted:#9FB2A6;
+  --green:#7CC69C; --green-soft:#21382B; --ticket:#F2C230; --ticket-ink:#2A2000;
+  --tomato:#F0866E; --line:#2C3D33; --card:#16211A; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;line-height:1.08;margin:0;letter-spacing:-0.01em}
+h1{font-size:clamp(2.6rem,7vw,4.6rem);font-weight:800}
+h2{font-size:clamp(1.8rem,4.2vw,2.6rem);font-weight:700;margin-bottom:.6rem}
+h3{font-size:1.25rem;font-weight:700}
+p{margin:0 0 1rem}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+.narrow{max-width:680px}
+section{padding:72px 0;border-top:1px solid var(--line)}
+.lede{font-size:1.15rem;color:var(--muted);max-width:620px}
+a{color:var(--green)}
+:focus-visible{outline:3px solid var(--ticket);outline-offset:2px}
+
+/* hero */
+.hero{padding:64px 0 72px;border-top:0}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+.brandline{font-weight:600;color:var(--green);margin-bottom:18px}
+.hero h1{margin-bottom:22px}
+.phone{background:var(--ink);border-radius:36px;padding:14px;max-width:330px;margin-left:auto;box-shadow:0 30px 60px -30px rgba(23,37,30,.5)}
+.screen{background:var(--surface);border-radius:26px;padding:22px 14px 26px;min-height:360px}
+.clock{text-align:center;font-family:"Bricolage Grotesque",sans-serif;font-size:3rem;font-weight:500;color:var(--ink);margin:6px 0 2px}
+.date{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:22px}
+.note{background:var(--card);border-radius:16px;padding:12px 14px;font-size:.88rem;line-height:1.45;margin-bottom:10px;border:1px solid var(--line)}
+.note b{display:block;font-size:.8rem;color:var(--green);margin-bottom:3px}
+.note.quiet{opacity:.75}
+
+/* story */
+.story p{font-size:1.2rem;line-height:1.7}
+.story .sign{font-size:.95rem;font-weight:600;color:var(--muted);margin-top:1.4rem}
+
+/* numbers */
+.facts{list-style:none;padding:0;margin:30px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.facts li{padding:20px 0;border-top:1px solid var(--line)}
+.facts strong{display:block;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:2.4rem;line-height:1;color:var(--green);margin-bottom:8px}
+.facts p{margin:0}
+.facts cite{display:block;font-style:normal;font-size:.82rem;color:var(--muted);margin-top:4px}
+@media (max-width:820px){.facts{grid-template-columns:1fr}}
+footer ol{padding-left:20px;margin:8px 0 0}
+footer li{margin-bottom:4px}
+
+/* timeline */
+.day{list-style:none;padding:0;margin:36px 0 0;display:grid;gap:0}
+.day li{display:grid;grid-template-columns:110px 1fr;gap:24px;padding:22px 0;border-top:1px solid var(--line)}
+.day time{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.3rem;color:var(--green)}
+.day h3{margin-bottom:6px}
+.day .says{background:var(--surface);border-left:4px solid var(--ticket);padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0 8px;font-size:.95rem}
+.day .feature{color:var(--muted);font-size:.9rem;margin:0}
+
+/* engine demo */
+.demo{display:grid;grid-template-columns:330px 1fr;gap:28px;margin-top:34px;align-items:start}
+.controls{background:var(--surface);border-radius:20px;padding:22px}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.presets button{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer}
+.presets button[aria-pressed="true"]{background:var(--green);color:var(--bg);border-color:var(--green)}
+.ctl{margin-bottom:16px}
+.ctl label{display:flex;justify-content:space-between;font-size:.9rem;font-weight:600;margin-bottom:4px}
+.ctl output{font-weight:500;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--green)}
+.toggle{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.toggle input{margin-top:4px;accent-color:var(--green)}
+.result{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px}
+.ticket{display:inline-block;background:var(--ticket);color:var(--ticket-ink);font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,2.5rem);padding:8px 18px 10px;border-radius:6px;transform:rotate(-1.5deg);margin-bottom:14px}
+.ticket.skip{background:var(--surface);color:var(--ink)}
+.ticket.wait{background:var(--green-soft);color:var(--ink)}
+.reason{font-size:1.02rem;margin-bottom:6px}
+.save{color:var(--muted);font-size:.92rem}
+.chart-box{overflow-x:auto;margin-top:16px}
+.chart-box svg{width:100%;min-width:480px;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.82rem;color:var(--muted);margin-top:6px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+
+/* engine steps */
+.steps{list-style:none;padding:0;margin:34px 0 0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:s}
+.steps li{padding:0 20px 0 0;counter-increment:s}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--green);color:var(--bg);font-weight:700;margin-bottom:12px}
+.steps h3{margin-bottom:6px}
+.steps p{font-size:.93rem;color:var(--muted)}
+
+/* why */
+.why{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:30px}
+.qa{border-top:1px solid var(--line);padding-top:16px;margin-bottom:24px}
+.qa h3{margin-bottom:8px}
+.qa p{color:var(--muted);font-size:.97rem}
+.moat{background:var(--green);color:var(--bg);border-radius:22px;padding:28px}
+.moat h3{font-size:1.5rem;margin-bottom:12px}
+.moat ul{margin:0;padding-left:20px}
+.moat li{margin-bottom:10px}
+
+/* roadmap */
+.road{list-style:none;padding:0;margin:30px 0 0;border-left:3px solid var(--green-soft)}
+.road li{padding:0 0 26px 24px;position:relative}
+.road li::before{content:"";position:absolute;left:-9px;top:6px;width:15px;height:15px;border-radius:50%;background:var(--green)}
+.road strong{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem;display:block}
+.road p{color:var(--muted);margin:2px 0 0}
+
+footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+
+@media (max-width:820px){
+  .hero-grid,.demo,.why{grid-template-columns:1fr}
+  .phone{margin:0 auto}
+  .steps{grid-template-columns:1fr 1fr;row-gap:28px}
+  .day li{grid-template-columns:1fr;gap:4px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .screen.play .note{animation:drop .5s cubic-bezier(.2,.9,.3,1.2) both;animation-delay:.5s}
+  .screen.play .note:nth-child(4){animation-delay:1.4s}
+  .screen.play .note:nth-child(5){animation-delay:2.3s}
+  @keyframes drop{from{opacity:0;transform:translateY(-14px) scale(.97)}to{opacity:1;transform:none}}
+  .ticket.stamp{animation:stamp .4s cubic-bezier(.2,1.6,.4,1)}
+  @keyframes stamp{0%{transform:rotate(-7deg) scale(1.3);opacity:.3}100%{transform:rotate(-1.5deg) scale(1);opacity:1}}
+}
+.phone-col{max-width:330px;margin-left:auto}
+.phone-col .phone{margin:0}
+.replay{display:block;margin:14px auto 0;font:inherit;font-size:.85rem;background:none;border:1px solid var(--line);color:var(--muted);padding:6px 14px;border-radius:999px;cursor:pointer}
+.replay:hover{color:var(--ink);border-color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.replay{display:none}}
+@media (max-width:820px){.phone-col{margin:0 auto}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="brandline">Pantry Pilot, a Woolworths concept for 2030</p>
+      <h1>Never miss the right price again.</h1>
+      <p class="lede">Every week something you need goes on sale, and by the time you remember, it’s back to full price. Pantry Pilot runs your household’s stock for you: it knows what’s in your cupboard, how fast you use it and when it’ll be cheap, then tells you what to buy, how many, and when to wait.</p>
+    </div>
+    <div class="phone-col"><div class="phone" aria-label="Example phone notifications">
+      <div class="screen play" id="screen">
+        <div class="clock">7:30</div>
+        <div class="date">Tuesday, 3 December 2030</div>
+        <div class="note"><b>Pantry Pilot</b>Oat milk is 50% off this week. You’ll run out in 3 days. Buy 4, as many as you’ll finish before they expire.</div>
+        <div class="note quiet"><b>Pantry Pilot</b>Yoghurt is on sale too, but skip it. You still have 4 tubs, and they’d expire first.</div>
+        <div class="note"><b>Pantry Pilot</b>Watching 1 goal: 10 blocks of chocolate before 20 December. No deal yet, still waiting for you.</div>
+      </div>
+    </div>
+    <button class="replay" id="replay" type="button">Replay notifications</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="story" class="story">
+  <div class="wrap narrow">
+    <h2>Why I built this</h2>
+    <p>Every Christmas I fly home to China, and the thing my mum loves most is Whittaker’s chocolate. She doesn’t want me to spend too much, so I wait for it to go on sale. But it almost never does, and I don’t walk past the chocolate aisle often enough to catch the rare week it’s cheap. Most years I end up paying full price.</p>
+    <p>It isn’t only chocolate. Not long ago I bought a shampoo bar at full price, and two days later it was half off.</p>
+    <p>It’s not just me.</p>
+    <p class="sign">Rima, Master of Computer Science student, University of Sydney</p>
+  </div>
+</section>
+
+<section id="numbers">
+  <div class="wrap">
+    <div class="narrow">
+      <h2>The problem, in numbers</h2>
+      <p class="lede">Shoppers already plan around sales. They just don’t have the information to do it well, so they overbuy, miss deals, and guess which product to trust.</p>
+    </div>
+    <ol class="facts">
+      <li><strong>70%</strong><p>of Australian adults stock up on at least one product category during major sales events.<cite>YouGov for Shopfully, reported 2026</cite></p></li>
+      <li><strong>52%</strong><p>of Australians are searching harder for discounts and specials.<cite>Compare the Market, Household Budget Barometer, August 2026</cite></p></li>
+      <li><strong>$1,500</strong><p>of food is thrown out each year by households under 35, 71% more than older generations.<cite>OzHarvest, Half Eaten report, 2025</cite></p></li>
+      <li><strong>81%</strong><p>of Australians worry that fake or manipulated reviews are becoming more common.<cite>Oysterly Media, Q1 2026</cite></p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="day">
+  <div class="wrap">
+    <div class="narrow">
+      <h2>A day with Pantry Pilot</h2>
+      <p class="lede">Meet Mia, 22. She studies in Sydney, shares a house in Newtown with two flatmates, and watches every dollar. It’s December 2030.</p>
+    </div>
+    <ol class="day">
+      <li><time>7:30 am</time><div>
+        <h3>Buy the right amount, not just the right item</h3>
+        <div class="says">“Oat milk is 50% off. You’ll run out in 3 days. Buy 4, as many as you’ll finish before they expire.” Yoghurt is also on sale, but Pantry Pilot stays quiet: she has four tubs left.</div>
+        <p class="feature">Deeper discounts mean bigger stock-ups, capped by shelf life and how fast she uses it.</p></div></li>
+      <li><time>12:40 pm</time><div>
+        <h3>Choose with real repurchase data</h3>
+        <div class="says">40 shampoos on the shelf. Instead of star ratings she can’t trust, she sees: “71% of shoppers with similar habits bought this again.”</div>
+        <p class="feature">Repurchase rate comes from real purchases, so it’s hard to fake. Out of stock? It suggests what loyal buyers switched to.</p></div></li>
+      <li><time>2:30 pm</time><div>
+        <h3>Never regret buying too early</h3>
+        <div class="says">The conditioner she bought yesterday is 40% off today. $3.20 lands in her Everyday Rewards account. She didn’t have to do anything.</div>
+        <p class="feature">Price-drop protection: if something drops in price within 7 days of buying it, the difference comes back automatically.</p></div></li>
+      <li><time>6:15 pm</time><div>
+        <h3>Share a pantry with flatmates</h3>
+        <div class="says">Her flatmate added dish soap to their shared pantry. The cost is already split three ways.</div>
+        <p class="feature">Shared household essentials, automatic cost splitting, no group-chat reminders.</p></div></li>
+      <li><time>9:00 pm</time><div>
+        <h3>Set a goal, and let it wait for the deal</h3>
+        <div class="says">In October, Mia set a goal: 10 blocks of her mum’s favourite chocolate before she flies home on 20 December. It almost never goes on sale. Tonight it drops to half price, and Pantry Pilot buys all 10 and holds them for pickup.</div>
+        <p class="feature">Goals with a deadline: say what you need and by when. It watches the price, buys automatically at the best moment, and in the last days tells you if now is as cheap as it gets.</p></div></li>
+      <li><time>31 Dec</time><div>
+        <h3>See what timing saved her</h3>
+        <div class="says">“You saved $430 this year by buying at the right time.” She posts it. Three friends download the app.</div>
+        <p class="feature">A year-in-review that Gen Z wants to share.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section id="engine">
+  <div class="wrap">
+    <div class="narrow">
+      <h2>Try the decision engine</h2>
+      <p class="lede">Pick a product, then change the discount and how much is left. The rule is simple: buy enough to last until the next time it’s at least this cheap, but never more than you can use before it expires.</p>
+    </div>
+    <div class="demo">
+      <div class="controls">
+        <div class="presets" role="group" aria-label="Product">
+          <button data-p="oat" aria-pressed="true">Oat milk</button>
+          <button data-p="laundry" aria-pressed="false">Laundry liquid</button>
+          <button data-p="yoghurt" aria-pressed="false">Yoghurt</button>
+          <button data-p="choc" aria-pressed="false">Chocolate</button>
+        </div>
+        <div class="ctl"><label for="disc">Discount today <output id="discO"></output></label>
+          <input id="disc" type="range" min="0" max="50" step="10"></div>
+        <div class="ctl"><label for="stock">Stock left <output id="stockO"></output></label>
+          <input id="stock" type="range" min="0" max="60" step="1"></div>
+        <div class="ctl"><label for="use">You use one every <output id="useO"></output></label>
+          <input id="use" type="range" min="3" max="45" step="1"></div>
+        <div class="ctl"><label for="shelf">Shelf life <output id="shelfO"></output></label>
+          <input id="shelf" type="range" min="7" max="365" step="7"></div>
+        <label class="toggle"><input id="bigger" type="checkbox"> Woolworths has a 50% sale scheduled in 2 weeks</label>
+      </div>
+      <div class="result" aria-live="polite">
+        <div id="ticket" class="ticket">Buy 4</div>
+        <p id="reason" class="reason"></p>
+        <p id="save" class="save"></p>
+        <div class="chart-box"><svg id="chart" viewBox="0 0 600 250" role="img" aria-label="Days of supply over time"></svg></div>
+        <div class="legend">
+          <span style="--c:var(--green)">Your supply after buying</span>
+          <span style="--c:var(--ticket)">Next deal this good</span>
+          <span style="--c:var(--tomato)">Expiry</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="narrow">
+      <h2>How it decides</h2>
+      <p class="lede">Four models, each built on data Woolworths already holds.</p>
+    </div>
+    <ol class="steps">
+      <li><h3>Usage</h3><p>Learns how fast each household uses each product from the gaps between purchases.</p></li>
+      <li><h3>Stock</h3><p>Estimates what’s left at home from what was bought and when. By 2030, 2D barcodes, which Woolworths already uses on fresh meat, record each item’s real expiry date at checkout, so stock goes from estimated to known. Users can correct it in one tap.</p></li>
+      <li><h3>Price</h3><p>Uses the internal promotions calendar for the next 4 weeks, and years of price history for seasonal patterns beyond that.</p></li>
+      <li><h3>Decision</h3><p>Combines the three into buy, how many, skip, or wait, with the reason shown every time.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="demand">
+  <div class="wrap">
+    <div class="narrow">
+      <h2>From waiting for deals to creating them</h2>
+      <p class="lede">Every goal tells Woolworths what shoppers want, how many, and by when. Pooled together, that becomes something no supermarket has had before: committed demand it can take to a brand.</p>
+    </div>
+    <ol class="steps">
+      <li><h3>Shoppers set goals</h3><p>5,000 people are waiting for the same chocolate before Christmas, 8 blocks each on average.</p></li>
+      <li><h3>Woolworths sees the demand</h3><p>40,000 blocks of committed demand, visible weeks ahead.</p></li>
+      <li><h3>The brand funds a deal</h3><p>Woolworths offers the brand a short, targeted promotion with a known sales volume behind it.</p></li>
+      <li><h3>Goals fill automatically</h3><p>Every waiting shopper gets the deal, with no aisle-watching and no missed week.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="narrow">
+      <h2>Why it has to be Woolworths</h2>
+    </div>
+    <div class="why">
+      <div>
+        <div class="qa"><h3>Won’t customers spend less?</h3>
+          <p>Shoppers already chase deals: switching to a cheaper supermarket is the most common way Australians cut grocery costs (ING, 2026). Pantry Pilot keeps the whole household’s routine shopping with Woolworths, so share of wallet goes up. Knowing who will buy what, and when, also makes demand forecasting sharper and cuts waste.</p></div>
+        <div class="qa"><h3>Doesn’t this clash with everyday low prices?</h3>
+          <p>No. With or without promotions, Pantry Pilot times each household’s restock so they never run out or overbuy. When promotions do run, Woolworths knows in advance how many units each one will move, so promotions become predictable instead of a guess.</p></div>
+        <div class="qa"><h3>Can brands fake the ratings?</h3>
+          <p>Most Australians now worry about fake reviews. Ranking is based on repurchase rate from verified purchases, not star ratings. Written reviews come only from real buyers and show how many times they bought it again.</p></div>
+        <div class="qa"><h3>Is it creepy?</h3>
+          <p>It’s opt-in, every suggestion says why, and the pantry is editable. Customers control it, and the value they get back is visible in dollars saved.</p></div>
+      </div>
+      <div class="moat">
+        <h3>What no third-party app can copy</h3>
+        <ul>
+          <li>The promotions calendar: Woolworths knows future prices, other apps can only guess.</li>
+          <li>Years of loyalty purchase data to learn each household’s real usage.</li>
+          <li>Verified repurchase data across thousands of products.</li>
+          <li>A delivery and click-and-collect network to turn a tap into an order.</li>
+          <li>Pooled demand from shoppers’ goals, which brands will fund promotions against.</li>
+          <li>A trust win that builds on Lower Shelf Price: honest, explained savings at a time when discount claims across the industry are under scrutiny.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="road">
+  <div class="wrap narrow">
+    <h2>Getting to 2030</h2>
+    <p class="lede">Each step uses technology that exists today and builds on the one before.</p>
+    <ol class="road">
+      <li><strong>2026</strong><p>Run-out reminders in the app, based on purchase history.</p></li>
+      <li><strong>2027</strong><p>“Buy how many” suggestions on sale items, price-history charts, and 7-day price-drop protection for Everyday Rewards members.</p></li>
+      <li><strong>2028</strong><p>Seasonal “wait” nudges and repurchase-based rankings. Expiry dates captured at checkout as 2D barcodes spread across categories, building on Woolworths’ own rollout.</p></li>
+      <li><strong>2029</strong><p>Goals with deadlines, automatic buying and click-and-collect holds, plus shared household pantries.</p></li>
+      <li><strong>2030</strong><p>Pooled-demand deals with brands, full household autopilot, and an open connection for customers’ personal AI assistants to order on their behalf.</p></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Future of Retail Case Competition 2026 submission.</p>
+    <p>How we estimated $430: average weekly grocery spend of about $186 (Compare the Market, 2026) over a year is about $9,700. Assuming about 30% of a basket can be bought ahead and right-time buying saves about 15% on it gives roughly $430. Mia, the repurchase rate, the 5,000-shopper example and the deal intervals in the demo are illustrative.</p>
+    <p>Sources</p>
+    <ol>
+      <li><a href="https://insideretail.com.au/top-stories/aussies-change-grocery-shopping-habits-as-cost-pressures-continue-report-finds-202606">ING Sense of Us 2026 and YouGov for Shopfully, via Inside Retail</a></li>
+      <li><a href="https://www.comparethemarket.com.au/news/australia-most-worrying-bill-2026-groceries-spend-on-shopping/">Compare the Market, Household Budget Barometer 2026</a></li>
+      <li><a href="https://www.ozharvest.org/news/research-shows-generation-waste-as-millennials-and-gen-z-fuel-the-nations-food-waste-problem/">OzHarvest, Half Eaten: Australian Household Food Waste Research, 2025</a></li>
+      <li><a href="https://direct.businessnewsaustralia.com/articles/trust-in-online-content-eroding-as-fake-reviews-and-ai-blur-the-lines-report-finds.html">Oysterly Media, The Changing Landscape of Discovery and Trust, 2026</a></li>
+      <li><a href="https://www.adnews.com.au/news/iab-cost-of-living-pressure-making-australians-more-deliberate-shoppers">IAB Australia and Pureprofile, Commerce and Discovery Report 2026</a></li>
+      <li><a href="https://www.gs1.org/sites/gs1/files/2022-06/case-study-woolworths-gs1australia.pdf">GS1, Woolworths Australia 2D barcode case study, 2022</a></li>
+    </ol>
+  </div>
+</footer>
+
+<script>
+const presets = {
+  oat:     {name:"oat milk",       price:3.2, use:6,  shelf:28,  stock:3,  disc:50},
+  laundry: {name:"laundry liquid", price:18,  use:30, shelf:364, stock:12, disc:20},
+  yoghurt: {name:"yoghurt",        price:7,   use:6,  shelf:21,  stock:18, disc:30},
+  choc:    {name:"chocolate",      price:6,   use:14, shelf:238, stock:4,  disc:20}
+};
+// Expected days until the next deal at least this deep (illustrative history model)
+const gap = {10:14, 20:21, 30:35, 40:49, 50:70};
+const $ = id => document.getElementById(id);
+let lastLabel = null;
+let current = "oat";
+
+function weeks(d){ const w = Math.round(d/7); return w <= 1 ? "about a week" : `about ${w} weeks`; }
+
+function load(key){
+  current = key; const p = presets[key];
+  $("disc").value = p.disc; $("stock").value = p.stock; $("use").value = p.use; $("shelf").value = p.shelf;
+  $("bigger").checked = false;
+  document.querySelectorAll(".presets button").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === key));
+  update();
+}
+
+function decide(s){
+  const p = presets[current];
+  if (s.disc === 0){
+    if (s.bigger && s.stock < 14){
+      const n = Math.max(1, Math.ceil((14 - s.stock)/s.use));
+      return {kind:"buy", n, text:`Buy just ${n} to bridge the gap. A 50% sale starts in 2 weeks, so stock up then.`};
+    }
+    if (s.stock <= 3) return {kind:"buy", n:1, text:`You’ll run out in ${s.stock} days and nothing’s on sale soon. Buy one at full price.`};
+    return {kind:"wait", n:0, text:`Wait. You have ${s.stock} days left, and a 20% deal usually comes around in ${weeks(gap[20])}.`};
+  }
+  let horizon = gap[s.disc], bridged = false;
+  if (s.bigger && s.disc < 50){ horizon = 14; bridged = true; }
+  const deficit = horizon - s.stock;
+  if (deficit <= 0){
+    return {kind:"skip", n:0, text: bridged
+      ? `Skip. You have ${s.stock} days left, enough to reach the 50% sale in 2 weeks.`
+      : `Skip. You have ${s.stock} days left, enough to reach the next ${s.disc}% deal in ${weeks(horizon)}.`};
+  }
+  let n = Math.ceil(deficit / s.use);
+  const shelfCap = Math.floor((s.shelf - s.stock) / s.use);
+  const cap = Math.max(shelfCap, s.stock <= 3 ? 1 : 0);
+  const capped = n > Math.min(cap, 8);
+  n = Math.min(n, cap, 8);
+  if (n <= 0) return {kind:"skip", n:0, text:`Skip. Anything you buy now would expire before you finish what’s at home.`, horizon};
+  let text;
+  if (bridged) text = `Buy just ${n} to last until the 50% sale in 2 weeks, then stock up properly.`;
+  else text = `Buy ${n}. That lasts until the next ${s.disc}% deal, expected in ${weeks(horizon)}.`;
+  if (capped) text += n >= 8 ? ` Capped at 8 to fit your cupboard.` : ` Capped so nothing expires before you use it.`;
+  return {kind:"buy", n, text, horizon};
+}
+
+let prev = null, raf = 0;
+function draw(s, r){
+  const supply = s.stock + r.n * s.use;
+  const target = { supply, deal: s.bigger && s.disc < 50 ? 14 : (s.disc === 0 ? gap[20] : gap[s.disc]), shelf: s.shelf, maxY: Math.max(30, Math.ceil((supply + 5)/10)*10) };
+  cancelAnimationFrame(raf);
+  if (!prev || matchMedia("(prefers-reduced-motion: reduce)").matches){ prev = target; render(target); return; }
+  const from = {...prev}, t0 = performance.now(), dur = 380;
+  const step = now => {
+    const k = Math.min(1, (now - t0)/dur), e = 1 - Math.pow(1 - k, 3), cur = {};
+    for (const key in target) cur[key] = from[key] + (target[key] - from[key]) * e;
+    prev = k < 1 ? cur : target; render(prev);
+    if (k < 1) raf = requestAnimationFrame(step);
+  };
+  raf = requestAnimationFrame(step);
+}
+
+function render(v){
+  const svg = $("chart"), W = 600, H = 250, L = 44, R = 16, T = 16, B = 34;
+  const maxX = 120;
+  const supply = v.supply, maxY = v.maxY;
+  const x = d => L + (Math.min(d, maxX)/maxX)*(W-L-R);
+  const y = v => T + (1 - v/maxY)*(H-T-B);
+  const css = getComputedStyle(document.documentElement);
+  const c = n => css.getPropertyValue(n).trim();
+  let g = "";
+  for (let t = 0; t <= maxY + 0.001; t += maxY/5){
+    g += `<line x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}" stroke="${c("--line")}" stroke-width="1"/>`;
+    g += `<text x="${L-8}" y="${y(t)+4}" text-anchor="end" font-size="11" fill="${c("--muted")}">${Math.round(t)}</text>`;
+  }
+  for (let d = 0; d <= maxX; d += 30){
+    g += `<text x="${x(d)}" y="${H-12}" text-anchor="middle" font-size="11" fill="${c("--muted")}">${d === 0 ? "today" : "day " + d}</text>`;
+  }
+  g += `<text x="${L}" y="${T-4}" font-size="11" fill="${c("--muted")}">days of supply</text>`;
+  const end = Math.min(supply, maxX);
+  const yEnd = supply > maxX ? y(supply - maxX) : y(0);
+  g += `<path d="M${x(0)},${y(0)} L${x(0)},${y(supply)} L${x(end)},${yEnd} L${x(end)},${y(0)} Z" fill="${c("--green-soft")}"/>`;
+  g += `<line x1="${x(0)}" y1="${y(supply)}" x2="${x(end)}" y2="${yEnd}" stroke="${c("--green")}" stroke-width="3"/>`;
+  const deal = v.deal;
+  if (deal <= maxX){
+    g += `<line x1="${x(deal)}" x2="${x(deal)}" y1="${T}" y2="${H-B}" stroke="${c("--ticket")}" stroke-width="4"/>`;
+    g += `<text x="${x(deal)+6}" y="${T+12}" font-size="11" font-weight="600" fill="${c("--ink")}">next deal</text>`;
+  }
+  if (v.shelf <= maxX){
+    g += `<line x1="${x(v.shelf)}" x2="${x(v.shelf)}" y1="${T}" y2="${H-B}" stroke="${c("--tomato")}" stroke-width="2" stroke-dasharray="5 4"/>`;
+    g += `<text x="${x(v.shelf)+6}" y="${T+28}" font-size="11" font-weight="600" fill="${c("--tomato")}">expiry</text>`;
+  }
+  svg.innerHTML = g;
+}
+
+function update(){
+  const s = { disc:+$("disc").value, stock:+$("stock").value, use:+$("use").value, shelf:+$("shelf").value, bigger:$("bigger").checked };
+  $("discO").textContent = s.disc === 0 ? "full price" : `${s.disc}% off`;
+  $("stockO").textContent = `${s.stock} days`;
+  $("useO").textContent = `${s.use} days`;
+  $("shelfO").textContent = s.shelf >= 365 ? "1 year" : `${s.shelf} days`;
+  const r = decide(s), t = $("ticket");
+  t.classList.toggle("skip", r.kind === "skip"); t.classList.toggle("wait", r.kind === "wait");
+  const label = r.kind === "buy" ? `Buy ${r.n}` : r.kind === "wait" ? "Wait" : "Skip";
+  if (t.textContent !== label && lastLabel !== null){ t.textContent = label; t.classList.remove("stamp"); void t.offsetWidth; t.classList.add("stamp"); }
+  t.textContent = label; lastLabel = label;
+  $("reason").textContent = r.text;
+  const saved = r.n * presets[current].price * s.disc / 100;
+  $("save").textContent = r.kind === "buy" && s.disc > 0 ? `You save $${saved.toFixed(2)} on ${presets[current].name} compared with full price.` : "";
+  draw(s, r);
+}
+
+document.querySelectorAll(".presets button").forEach(b => b.addEventListener("click", () => load(b.dataset.p)));
+["disc","stock","use","shelf","bigger"].forEach(id => $(id).addEventListener("input", update));
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", update);
+load("oat");
+
+const scr = $("screen");
+$("replay").addEventListener("click", () => { scr.classList.remove("play"); void scr.offsetWidth; scr.classList.add("play"); });
+
+</script>
+</body>
+</html>
